@@ -1,10 +1,8 @@
-/**
- * Public Routes fuck you
- */
+export { handlers } from 'auth';
 
 export const publicRoutes = ['/'];
 
-export const authRoutes = ['/login', '/register'];
+export const authRoutes = ['/sign-in', '/register'];
 
 export const apiAuthPrefix = '/api/auth';
 
