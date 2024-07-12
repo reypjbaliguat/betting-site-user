@@ -1,11 +1,8 @@
-'use client';
+import { auth } from 'auth';
 
-import { useSession } from 'next-auth/react';
-
-function Page() {
-    const session = useSession();
-    console.log(session);
-    return <div>Settings</div>;
+async function Page() {
+    const session = await auth();
+    return <div>{JSON.stringify(session)}</div>;
 }
 
 export default Page;

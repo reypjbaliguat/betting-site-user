@@ -1,8 +1,7 @@
-'use server';
 
+import authConfig from 'auth.config';
 import NextAuth from 'next-auth';
 import { DEFAULT_LOGIN_REDIRECT, apiAuthPrefix, authRoutes, publicRoutes } from './routes';
-import authConfig from 'auth.config';
 
 export const { auth } = NextAuth(authConfig);
 

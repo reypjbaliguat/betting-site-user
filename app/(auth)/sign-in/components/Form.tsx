@@ -1,21 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { FormHelperText, TextField } from '@mui/material';
-import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import signInSchema, { SignInFormData } from 'core/schemas/sign-in';
 import { LoadingButton } from '@mui/lab';
-import { enqueueSnackbar } from 'notistack';
-import { signIn, SignInResponse, useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { TextField } from '@mui/material';
 import PasswordField from 'components/inputs/PasswordField';
-import { SnackbarMessage } from 'core/constants/messages';
-import { DEFAULT_LOGIN_REDIRECT } from 'routes';
+import signInSchema, { SignInFormData } from 'core/schemas/sign-in';
+import { signIn, SignInResponse } from 'next-auth/react';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 function Form() {
     const [loading, setLoading] = useState(false);
-    const session = useSession();
 
     const {
         handleSubmit,
@@ -30,7 +25,7 @@ function Form() {
         await signIn('credentials', {
             email,
             password,
-            redirectTo: DEFAULT_LOGIN_REDIRECT
+            redirect: false
         }).then((res: SignInResponse | undefined) => {
             setLoading(false);
             console.log(res);

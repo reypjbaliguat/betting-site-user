@@ -1,8 +1,8 @@
 'use client';
-import { IconButton, InputAdornment, TextField, TextFieldProps } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { mdiEyeOffOutline, mdiEyeOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { IconButton, InputAdornment, TextField, TextFieldProps } from '@mui/material';
+import { useState } from 'react';
 
 function PasswordField(props: TextFieldProps) {
     const [showPassword, setShowPassword] = useState(false);
