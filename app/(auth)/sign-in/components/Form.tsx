@@ -6,12 +6,16 @@ import { TextField } from '@mui/material';
 import PasswordField from 'components/inputs/PasswordField';
 import signInSchema, { SignInFormData } from 'core/schemas/sign-in';
 import { signIn, SignInResponse } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 function Form() {
     const [loading, setLoading] = useState(false);
-
+    const [error, setError] = useState<string | undefined>('');
+    const [success, setSuccess] = useState<string | undefined>('');
+    const router = useRouter();
     const {
         handleSubmit,
         control,
@@ -28,17 +32,16 @@ function Form() {
             redirect: false
         }).then((res: SignInResponse | undefined) => {
             setLoading(false);
-            console.log(res);
-            // enqueueSnackbar('Incorrect email/password or unauthorized entry!', {
-            //     variant: 'error'
-            // });
-
-            // enqueueSnackbar(SnackbarMessage.GENERIC_ERROR, {
-            //     variant: 'error'
-            // });
+            if (res?.error) {
+                enqueueSnackbar(res?.error, {
+                    variant: 'alert',
+                    severity: 'error'
+                });
+            } else {
+                router.push('/users');
+            }
         });
     };
-    console.log(errors);
     return (
         <form className='flex basis-full flex-col items-center gap-y-5' onSubmit={handleSubmit(handleSignInSubmit)}>
             <h6 className='my-0 text-2xl font-bold'>Login</h6>

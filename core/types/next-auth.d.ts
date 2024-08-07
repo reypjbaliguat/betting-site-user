@@ -1,32 +1,16 @@
-interface UserSession {
-    id: string;
-    email: string;
-    email_verified: boolean;
-    access_token: string;
-    refresh_token: string;
-    business: {
-        id: string;
-        type: BusinessType;
-    };
-    error?: string;
-}
+import 'next-auth';
 
-// declare module 'next-auth' {
-//     interface Session {
-//         user: UserSession;
-//     }
-
-//     interface User {
-//         username: string;
-//         access_token: string;
-//         refresh_token: string;
-//     }
-// }
-
-declare module 'next-auth/jwt' {
-    interface JWT {
-        access_token: string;
-        refresh_token: string;
-        user: UserSession;
+declare module 'next-auth' {
+    /**
+     * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
+     */
+    interface Session {
+        user: {
+            token: string;
+            error: string;
+            accessToken: string;
+            email: string;
+            role: string;
+        };
     }
 }
