@@ -1,8 +1,12 @@
-import { auth } from 'auth';
+'use client';
 
-async function Page() {
-    const session = await auth();
-    return <div>{JSON.stringify(session)}</div>;
+import { useGetGamesQuery } from '@/slices/game';
+import { useSession } from 'next-auth/react';
+
+function Page() {
+    const session = useSession();
+    const data = useGetGamesQuery({});
+    return <div />;
 }
 
 export default Page;

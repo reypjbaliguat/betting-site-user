@@ -1,7 +1,9 @@
+import { createOAuthUser, getUserByEmail, loginOAuthUser } from 'core/helpers/auth';
 import { login } from 'core/services/auth';
 import jwt, { Secret } from 'jsonwebtoken';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 
 const handler = NextAuth({
     providers: [
@@ -36,16 +38,51 @@ const handler = NextAuth({
 
                 return null;
             }
+        }),
+        GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            authorization: {
+                params: {
+                    prompt: 'consent',
+                    access_type: 'offline',
+                    response_type: 'code'
+                }
+            }
         })
     ],
     callbacks: {
+        async signIn({ user, account, profile, email, credentials }) {
+            const existingUser = await getUserByEmail(user.email!);
+            if (account?.provider !== 'credentials') {
+                if (existingUser && existingUser.password) {
+                    throw new Error('Email already linked to other account. Please login using your credentials!');
+                } else {
+                    await createOAuthUser(user.email!);
+                }
+            }
+            return true;
+        },
         async jwt({ token, user, account }: { token: any; user: any; account: any }) {
-            if (account && user) {
+            if (account?.provider === 'credentials' && user) {
                 const check = (await jwt.verify(user.token, process.env.JWT_SECRET as Secret)) as { email: string; role: string };
-                return {
+                token = {
+                    ...token,
                     token: user.token,
                     email: check.email,
                     role: check.role,
+                    id: user.id
+                };
+            } else if (account?.access_token && account.provider !== 'credentials') {
+                const socialUser = (await loginOAuthUser(account?.email)) as {
+                    token: string;
+                    role: string;
+                };
+                token = {
+                    ...token,
+                    token: socialUser.token,
+                    email: user.email,
+                    role: socialUser.role,
                     id: user.id
                 };
             }
@@ -64,8 +101,10 @@ const handler = NextAuth({
         maxAge: 2 * 24 * 60 * 60 // 2 days
     },
     pages: {
-        signIn: '/sign-in'
-    }
+        signIn: '/sign-in',
+        error: undefined
+    },
+    secret: process.env.JWT_SECRET
 });
 
 export { handler as GET, handler as POST };

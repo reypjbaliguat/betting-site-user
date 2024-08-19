@@ -6,7 +6,7 @@ const API_PATH = 'games';
 const gameApi = api.injectEndpoints({
     endpoints: (builder) => ({
         getGames: builder.query<GetGameResponse, GetGameProps>({
-            query: ({ name, skip, limit }) => {
+            query: ({ name, skip = 10, limit = 10 }) => {
                 const params = new URLSearchParams({
                     skip: skip.toString(),
                     limit: limit.toString(),

@@ -2,20 +2,22 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { TextField } from '@mui/material';
+import { Button, Divider, TextField } from '@mui/material';
 import PasswordField from 'components/inputs/PasswordField';
 import signInSchema, { SignInFormData } from 'core/schemas/sign-in';
-import { signIn, SignInResponse } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { enqueueSnackbar } from 'notistack';
+import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { FcGoogle } from 'react-icons/fc';
 
 function Form() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | undefined>('');
     const [success, setSuccess] = useState<string | undefined>('');
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl');
     const {
         handleSubmit,
         control,
@@ -29,17 +31,12 @@ function Form() {
         await signIn('credentials', {
             email,
             password,
-            redirect: false
-        }).then((res: SignInResponse | undefined) => {
-            setLoading(false);
-            if (res?.error) {
-                enqueueSnackbar(res?.error, {
-                    variant: 'alert',
-                    severity: 'error'
-                });
-            } else {
-                router.push('/users');
-            }
+            ...(callbackUrl && { callbackUrl, redirect: true })
+        });
+    };
+    const handleGoogleLogin = async () => {
+        await signIn('google', {
+            ...(callbackUrl && { callbackUrl, redirect: true })
         });
     };
     return (
@@ -69,6 +66,14 @@ function Form() {
             <LoadingButton loading={isSubmitting || loading} type='submit' variant='contained' fullWidth>
                 Sign In
             </LoadingButton>
+            <Divider className='w-full'>
+                <span className='text-gray-500'> OR </span>
+            </Divider>
+            <div className='flex gap-x-5'>
+                <Button onClick={handleGoogleLogin}>
+                    <FcGoogle className='h-7 w-7 cursor-pointer' />
+                </Button>
+            </div>
         </form>
     );
 }
