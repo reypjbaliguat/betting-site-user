@@ -102,7 +102,7 @@ const handler = NextAuth({
     },
     pages: {
         signIn: '/sign-in',
-        error: undefined
+        error: '/auth/error'
     },
     secret: process.env.JWT_SECRET
 });

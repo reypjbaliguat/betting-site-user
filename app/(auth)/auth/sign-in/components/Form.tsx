@@ -3,9 +3,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import { Button, Divider, TextField } from '@mui/material';
+import { FormError } from 'components/form-error';
+import { FormSuccess } from 'components/form-success';
 import PasswordField from 'components/inputs/PasswordField';
 import signInSchema, { SignInFormData } from 'core/schemas/sign-in';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -31,7 +33,14 @@ function Form() {
         await signIn('credentials', {
             email,
             password,
-            ...(callbackUrl && { callbackUrl, redirect: true })
+            redirect: false
+        }).then((res) => {
+            setLoading(false);
+            if (res?.error) {
+                setError(res?.error);
+            } else {
+                router.push('/settings');
+            }
         });
     };
     const handleGoogleLogin = async () => {
@@ -39,6 +48,7 @@ function Form() {
             ...(callbackUrl && { callbackUrl, redirect: true })
         });
     };
+    const session = useSession();
     return (
         <form className='flex basis-full flex-col items-center gap-y-5' onSubmit={handleSubmit(handleSignInSubmit)}>
             <h6 className='my-0 text-2xl font-bold'>Login</h6>
@@ -63,6 +73,8 @@ function Form() {
                 )}
                 name='password'
             />
+            <FormError message={error} />
+            <FormSuccess message={success} />
             <LoadingButton loading={isSubmitting || loading} type='submit' variant='contained' fullWidth>
                 Sign In
             </LoadingButton>
