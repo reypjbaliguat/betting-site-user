@@ -1,3 +1,4 @@
+import { pages } from 'config/pages';
 import { createOAuthUser, getUserByEmail, loginOAuthUser } from 'core/helpers/auth';
 import { login } from 'core/services/auth';
 import jwt, { Secret } from 'jsonwebtoken';
@@ -6,6 +7,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 
 const handler = NextAuth({
+    pages: pages,
     providers: [
         CredentialsProvider({
             name: 'credentials',
@@ -59,6 +61,7 @@ const handler = NextAuth({
                     throw new Error('Email already linked to other account. Please login using your credentials!');
                 } else {
                     await createOAuthUser(user.email!);
+                    return true;
                 }
             }
             return true;
@@ -99,12 +102,7 @@ const handler = NextAuth({
     session: {
         strategy: 'jwt',
         maxAge: 2 * 24 * 60 * 60 // 2 days
-    },
-    pages: {
-        signIn: '/sign-in',
-        error: '/auth/error'
-    },
-    secret: process.env.JWT_SECRET
+    }
 });
 
 export { handler as GET, handler as POST };

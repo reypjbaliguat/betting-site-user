@@ -6,8 +6,9 @@ import { Button, Divider, TextField } from '@mui/material';
 import { FormError } from 'components/form-error';
 import { FormSuccess } from 'components/form-success';
 import PasswordField from 'components/inputs/PasswordField';
+import { useCurrentUser } from 'core/helpers/auth';
 import signInSchema, { SignInFormData } from 'core/schemas/sign-in';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
@@ -19,36 +20,45 @@ function Form() {
     const [error, setError] = useState<string | undefined>('');
     const [success, setSuccess] = useState<string | undefined>('');
     const router = useRouter();
+    const session = useSession();
+    const user = useCurrentUser();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
     const {
         handleSubmit,
         control,
         formState: { errors, isSubmitting }
-    } = useForm<SignInFormData>({ resolver: zodResolver(signInSchema) });
+    } = useForm<SignInFormData>({ resolver: zodResolver(signInSchema), mode: 'all' });
 
     const handleSignInSubmit = async (data: SignInFormData) => {
         const { email, password } = data;
         setLoading(true);
-
         await signIn('credentials', {
             email,
             password,
             redirect: false
         }).then((res) => {
-            setLoading(false);
+            if (res?.ok) {
+                router.push('/dashboard');
+                console.log('redirect');
+                setError('');
+            }
             if (res?.error) {
+                console.log('error');
                 setError(res?.error);
-            } else {
-                router.push('/settings');
             }
         });
+        setLoading(false);
     };
+
     const handleGoogleLogin = async () => {
         await signIn('google', {
             ...(callbackUrl && { callbackUrl, redirect: true })
         });
     };
+    if (session.status === 'authenticated') {
+        router.push('/dashboard');
+    }
     return (
         <form className='flex basis-full flex-col items-center gap-y-5' onSubmit={handleSubmit(handleSignInSubmit)}>
             <h6 className='my-0 text-2xl font-bold'>Login</h6>
