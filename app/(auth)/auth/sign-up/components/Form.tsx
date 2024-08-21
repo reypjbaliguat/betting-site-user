@@ -6,7 +6,7 @@ import { Button, Divider, TextField } from '@mui/material';
 import { FormError } from 'components/form-error';
 import { FormSuccess } from 'components/form-success';
 import PasswordField from 'components/inputs/PasswordField';
-import signInSchema, { SignInFormData } from 'core/schemas/sign-in';
+import signUpSchema, { SignUpFormData } from 'core/schemas/sign-up';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -25,9 +25,9 @@ function Form() {
         handleSubmit,
         control,
         formState: { errors, isSubmitting }
-    } = useForm<SignInFormData>({ resolver: zodResolver(signInSchema) });
+    } = useForm<SignUpFormData>({ resolver: zodResolver(signUpSchema) });
 
-    const handleSignInSubmit = async (data: SignInFormData) => {
+    const handleSignInSubmit = async (data: SignUpFormData) => {
         const { email, password } = data;
         setLoading(true);
 
@@ -51,7 +51,7 @@ function Form() {
     };
     return (
         <form className='flex basis-full flex-col items-center gap-y-5' onSubmit={handleSubmit(handleSignInSubmit)}>
-            <h6 className='my-0 text-2xl font-bold'>Login</h6>
+            <h6 className='my-0 text-2xl font-bold'>Sign Up</h6>
             <Controller
                 control={control}
                 render={({ field }) => (
@@ -73,10 +73,23 @@ function Form() {
                 )}
                 name='password'
             />
+            <Controller
+                control={control}
+                render={({ field }) => (
+                    <PasswordField
+                        {...field}
+                        label='Confirm Password'
+                        helperText={errors.confirmPassword?.message}
+                        error={!!errors.confirmPassword}
+                        fullWidth
+                    />
+                )}
+                name='confirmPassword'
+            />
             <FormError message={error} />
             <FormSuccess message={success} />
             <LoadingButton loading={isSubmitting || loading} type='submit' variant='contained' fullWidth>
-                Sign In
+                Submit
             </LoadingButton>
 
             <Divider className='w-full'>
@@ -87,8 +100,8 @@ function Form() {
                     <FcGoogle className='h-7 w-7 cursor-pointer' />
                 </Button>
             </div>
-            <Link href='/auth/sign-up' className='text-blue-500'>
-                No account? Click here to register!
+            <Link href='/auth/sign-in' className='text-center text-blue-500'>
+                Already have an account? Click here to sign in!
             </Link>
         </form>
     );
