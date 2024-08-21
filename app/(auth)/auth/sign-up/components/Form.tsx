@@ -1,5 +1,6 @@
 'use client';
 
+import { useRegisterUserMutation } from '@/slices/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import { Button, Divider, TextField } from '@mui/material';
@@ -10,6 +11,7 @@ import signUpSchema, { SignUpFormData } from 'core/schemas/sign-up';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { enqueueSnackbar } from 'notistack';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
@@ -18,6 +20,7 @@ function Form() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | undefined>('');
     const [success, setSuccess] = useState<string | undefined>('');
+    const [register] = useRegisterUserMutation();
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
@@ -28,21 +31,20 @@ function Form() {
     } = useForm<SignUpFormData>({ resolver: zodResolver(signUpSchema) });
 
     const handleSignInSubmit = async (data: SignUpFormData) => {
-        const { email, password } = data;
         setLoading(true);
-
-        await signIn('credentials', {
-            email,
-            password,
-            redirect: false
-        }).then((res) => {
-            setLoading(false);
-            if (res?.error) {
-                setError(res?.error);
-            } else {
-                router.push('/settings');
-            }
-        });
+        register(data)
+            .unwrap()
+            .then((data) => {
+                enqueueSnackbar(`${data.email} successfully created`, {
+                    severity: 'success',
+                    variant: 'alert'
+                });
+                router.push('/auth/sign-in');
+            })
+            .catch((err) => {
+                setError(err.data.error);
+            });
+        setLoading(false);
     };
     const handleGoogleLogin = async () => {
         await signIn('google', {
