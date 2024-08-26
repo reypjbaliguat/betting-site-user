@@ -6,7 +6,6 @@ import { Button, Divider, TextField } from '@mui/material';
 import { FormError } from 'components/form-error';
 import { FormSuccess } from 'components/form-success';
 import PasswordField from 'components/inputs/PasswordField';
-import { useCurrentUser } from 'core/helpers/auth';
 import signInSchema, { SignInFormData } from 'core/schemas/sign-in';
 import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -21,7 +20,6 @@ function Form() {
     const [success, setSuccess] = useState<string | undefined>('');
     const router = useRouter();
     const session = useSession();
-    const user = useCurrentUser();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl');
     const {
@@ -39,16 +37,14 @@ function Form() {
             redirect: false
         }).then((res) => {
             if (res?.ok) {
-                router.push('/dashboard');
-                console.log('redirect');
+                router.push('/dashboard/games');
                 setError('');
             }
             if (res?.error) {
-                console.log('error');
                 setError(res?.error);
             }
+            setLoading(false);
         });
-        setLoading(false);
     };
 
     const handleGoogleLogin = async () => {
@@ -57,7 +53,7 @@ function Form() {
         });
     };
     if (session.status === 'authenticated') {
-        router.push('/dashboard');
+        router.push('/dashboard/games');
     }
     return (
         <form className='flex basis-full flex-col items-center gap-y-5' onSubmit={handleSubmit(handleSignInSubmit)}>
