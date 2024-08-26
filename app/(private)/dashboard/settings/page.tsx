@@ -1,5 +1,5 @@
 function Page() {
-    return <div>Dashboard shit</div>;
+    return <div>Settings</div>;
 }
 
 export default Page;
