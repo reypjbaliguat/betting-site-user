@@ -1,4 +1,4 @@
-import { mdiCash, mdiGamepad } from '@mdi/js';
+import { mdiCash, mdiCog, mdiGamepad, mdiNoteMultipleOutline } from '@mdi/js';
 
 export const sideNavLinks = [
     {
@@ -10,5 +10,15 @@ export const sideNavLinks = [
         label: 'Bets',
         href: '/dashboard/bets',
         icon: mdiCash
+    },
+    {
+        label: 'Transactions',
+        href: '/dashboard/transactions',
+        icon: mdiNoteMultipleOutline
+    },
+    {
+        label: 'Settings',
+        href: '/dashboard/settings',
+        icon: mdiCog
     }
 ];
