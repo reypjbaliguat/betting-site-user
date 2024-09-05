@@ -39,7 +39,7 @@ dependencies:
     specifier: ^2.4.3
     version: 2.4.3
   dayjs:
-    specifier: ^1.11.11
+    specifier: ^1.11.12
     version: 1.11.12
   eslint-config-prettier:
     specifier: ^9.1.0

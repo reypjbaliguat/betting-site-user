@@ -13,7 +13,7 @@ function SideNavLinks({ isOpen }: { isOpen: boolean }) {
                 return (
                     <Link href={link.href} key={link.href}>
                         <div
-                            className={`flex w-full items-center justify-start rounded-md border border-gray-200 py-3 transition-all duration-1000 ${pathname.includes(link.href) && 'justify-center bg-blue-500 text-white'} ${isOpen ? 'px-4' : 'px-1'}`}
+                            className={`flex w-full items-center justify-start rounded-md border border-gray-200 py-3 transition-all duration-1000 hover:border-blue-500 hover:text-blue-500 ${pathname.includes(link.href) && 'justify-center bg-blue-500 text-white'} ${isOpen ? 'px-4 hover:px-10' : 'px-1'}`}
                         >
                             <Icon path={link.icon} size={1} />
                             {isOpen && <span className='ml-2'>{link.label}</span>}

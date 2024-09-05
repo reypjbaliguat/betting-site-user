@@ -7,7 +7,7 @@ function Layout({ children }: { children: React.ReactNode }) {
             <SideNav />
             <div className='flex grow flex-col'>
                 <TopNav />
-                {children}
+                <div className='flex w-full p-5'>{children}</div>
             </div>
         </div>
     );
